@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <cmath>
 
 #include "consoleMsg/consoleMsg.hpp"
 #include "controlGUI/controlGUI.hpp"
@@ -83,12 +84,14 @@ int main() {
     imageShader.setInt("image", 0);
     imageShader.setMat4("model", model);
     imageShader.setMat4("projection", projection);
+    imageShader.setInt("deltaHue", 0);
+    imageShader.setFloat("deltaSaturation", std::pow(0.9, 2.7));
+    // imageShader.setFloat("deltaSaturation", -0.5);
+    imageShader.setFloat("deltaLightness", 1.0f);
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        gui.render();
 
         imageShader.use();
         glActiveTexture(GL_TEXTURE0);
@@ -97,6 +100,8 @@ int main() {
         glBindVertexArray(quadVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
+
+        gui.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

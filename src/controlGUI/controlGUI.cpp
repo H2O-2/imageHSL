@@ -3,7 +3,7 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
-ControlGUI::ControlGUI(GLFWwindow* window) : glslVersion("#version 330"), showDemoWindow(true) {
+ControlGUI::ControlGUI(GLFWwindow* window) : glslVersion("#version 330"), showDemoWindow(false) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -24,8 +24,6 @@ void ControlGUI::render() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
-    ImGui::ShowDemoWindow(&showDemoWindow);
 
     ImGui::Begin("Hello, world!");
     ImGui::Text("test");
