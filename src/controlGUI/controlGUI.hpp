@@ -8,7 +8,7 @@ public:
 
     ControlGUI(GLFWwindow* window);
     ~ControlGUI();
-    void render();
+    void render(int *hue, int *sat, int *light);
     void destroy();
 private:
     bool showDemoWindow;

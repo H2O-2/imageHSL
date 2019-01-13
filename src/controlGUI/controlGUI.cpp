@@ -20,13 +20,15 @@ ControlGUI::~ControlGUI() {
     ImGui::DestroyContext();
 }
 
-void ControlGUI::render() {
+void ControlGUI::render(int *hue, int *sat, int *light) {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("Hello, world!");
-    ImGui::Text("test");
+    ImGui::Begin("HSL Control");
+    ImGui::SliderInt("Hue", hue, -180, 180);
+    ImGui::SliderInt("Saturation", sat, -100, 100);
+    ImGui::SliderInt("Lightness", light, -100, 100);
     ImGui::End();
 
     ImGui::Render();

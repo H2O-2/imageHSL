@@ -11,11 +11,6 @@ uniform float deltaLightness;
 
 void main() {
     fragColor = texture(image, texCoords);
-    // float avg = (fragColor.r + fragColor.g + fragColor.b) / 3;
-    // float a = 0;
-    // fragColor = vec4(a * fragColor.r + (1-a) * avg, a * fragColor.g + (1-a) * avg, a * fragColor.b + (1-a) * avg, 1.0);
-    // float l = 1.8;
-    // fragColor = l < 1.0 ? l * fragColor : (l - 1.0) * vec4(1.0) + (2.0 - l) * fragColor;
 
     // RGB to HSL
     float cMax = max(max(fragColor.r, fragColor.g), fragColor.b);
@@ -23,6 +18,7 @@ void main() {
     float chroma = cMax - cMin;
 
     // https://stackoverflow.com/a/39147465
+    // https://en.wikipedia.org/wiki/HSL_and_HSV
     float hue = 0; // Hue in the range of 0 to 360 degrees
     if (chroma > 0) {
         if (cMax == fragColor.r) {
@@ -34,7 +30,7 @@ void main() {
         }
     }
 
-    float lightness = (cMax + cMin) / 2; // Lightiness in the range of 0 to 1;
+    float lightness = (cMax + cMin) / 2;
 
     float saturation = 0;
     if (cMax == 0 || cMin == 1) {
@@ -52,7 +48,7 @@ void main() {
         hue -= 360;
     }
 
-    // Solely for over saturation modification
+    // Only over-saturation (i.e. an increase in the level of saturation) happens here if there is any
     if (deltaSaturation >= 0) {
         saturation += deltaSaturation;
     }
@@ -88,14 +84,14 @@ void main() {
         rgb += m;
     }
 
-    // Modify saturation by computing the luma if we are desaturating the image
+    // Only desaturating (i.e. a decrease in the level of saturation) happens here, this is done by blending in luma component
     // Referenced from https://stackoverflow.com/a/20820649
     if (deltaSaturation < 0) {
         float L = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
         rgb = vec3(rgb.r + (-deltaSaturation * (L - rgb.r)), rgb.g + (-deltaSaturation * (L - rgb.g)), rgb.b + (-deltaSaturation * (L - rgb.b)));
     }
 
-    // Modify lightness
+    // Modify lightness, for darkening we simply decrease the RGB values proportionally; for lightening we blend the original image with a white layer (1, 1, 1)
     rgb = deltaLightness < 1.0 ? deltaLightness * rgb : (deltaLightness - 1.0) * vec3(1.0) + (2.0 - deltaLightness) * rgb;
     fragColor = vec4(rgb, 1.0);
 }

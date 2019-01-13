@@ -80,13 +80,16 @@ int main() {
     glm::mat4 model;
     model = glm::scale(model, glm::vec3(WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f));
 
+    int hue = 0;
+    int sat = 0;
+    int light = 0;
+
     imageShader.use();
     imageShader.setInt("image", 0);
     imageShader.setMat4("model", model);
     imageShader.setMat4("projection", projection);
     imageShader.setInt("deltaHue", 0);
-    imageShader.setFloat("deltaSaturation", std::pow(0.9, 2.7));
-    // imageShader.setFloat("deltaSaturation", -0.5);
+    imageShader.setFloat("deltaSaturation", 0);
     imageShader.setFloat("deltaLightness", 1.0f);
 
     while (!glfwWindowShouldClose(window)) {
@@ -101,13 +104,14 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        gui.render();
+        gui.render(&hue, &sat, &light);
+        imageShader.setInt("deltaHue", hue);
+        imageShader.setFloat("deltaSaturation", sat >= 0 ? std::pow((float)sat / 100, 2.7) : (float)sat / 100);
+        imageShader.setFloat("deltaLightness", (float)light / 100 + 1);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    std::cout << glGetError() << '\n';
 
     glDeleteBuffers(1, &quadVBO);
     glDeleteVertexArrays(1, &quadVAO);
